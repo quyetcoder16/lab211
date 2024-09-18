@@ -17,6 +17,7 @@ public class StudentConTroller {
 
     private final ArrayList<Student> listOfStudent;
     private final Validation validation = new Validation();
+    private final ReportController reportController = new ReportController();
 
     public StudentConTroller() {
         this.listOfStudent = new ArrayList<>();
@@ -95,7 +96,7 @@ public class StudentConTroller {
                 System.out.println("list of student find is empty");
                 return;
             }
-            Collections.sort(listOfStudent, (Student student1, Student student2) -> {
+            Collections.sort(listOfStudentFindByName, (Student student1, Student student2) -> {
                 return (int) (student1.getStudentName().compareTo(student2.getStudentName()));
             });
 
@@ -112,6 +113,30 @@ public class StudentConTroller {
         for (Student student : listOfStudent) {
             System.out.println(student);
         }
+    }
+
+    public void report() {
+        if (listOfStudent.isEmpty()) {
+            System.out.println("List of student is empty!");
+            return;
+        }
+//        clean data in report if exist before
+        reportController.clearReport();
+        for (Student student : listOfStudent) {
+            int totalOfCourse = 0;
+            String studentName = student.getStudentName();
+            String course = student.getCourseName();
+            for (Student studentCountTotal : listOfStudent) {
+                boolean isEqualStudentNameAndCourse = studentName.equalsIgnoreCase(studentCountTotal.getStudentName())
+                        && course.equalsIgnoreCase(studentCountTotal.getCourseName());
+                if (isEqualStudentNameAndCourse) {
+                    totalOfCourse++;
+                }
+            }
+            reportController.addIfReportNotExitReport(studentName, course, totalOfCourse);
+        }
+
+        reportController.printReport();
     }
 
 }

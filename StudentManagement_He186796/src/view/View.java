@@ -38,6 +38,9 @@ public class View {
                 case 2:
                     studentConTroller.findAndSort();
                     break;
+                case 4:
+                    studentConTroller.report();
+                    break;
             }
             studentConTroller.printList();
         } while (chooseMenu != 5);
