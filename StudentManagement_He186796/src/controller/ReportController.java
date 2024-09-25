@@ -37,9 +37,11 @@ public class ReportController {
      * @param course
      * @return
      */
-    private boolean checkExitReport(String StudentName, String course) {
+    private boolean checkExitReport(String StudentId, String StudentName, String course) {
         for (Report report : listOfReport) {
-            boolean isOk = report.getStudentName().toLowerCase().contains(StudentName.toLowerCase())
+            boolean isOk
+                    = report.getStudentId().equalsIgnoreCase(StudentId)
+                    && report.getStudentName().toLowerCase().contains(StudentName.toLowerCase())
                     && report.getCourse().toLowerCase().contains(course.toLowerCase());
             if (isOk) {
                 return true;
@@ -50,13 +52,14 @@ public class ReportController {
 
     /**
      *
+     * @param studentId
      * @param StudentName
      * @param course
      * @param total
      */
-    public void addIfReportNotExitReport(String StudentName, String course, int total) {
-        if (!checkExitReport(StudentName, course)) {
-            Report newReport = new Report(StudentName, course, total);
+    public void addIfReportNotExitReport(String studentId, String StudentName, String course, int total) {
+        if (!checkExitReport(studentId, StudentName, course)) {
+            Report newReport = new Report(studentId, StudentName, course, total);
             this.listOfReport.add(newReport);
         }
     }

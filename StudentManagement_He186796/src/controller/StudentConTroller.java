@@ -14,11 +14,11 @@ import util.Validation;
  * @author quyet
  */
 public class StudentConTroller {
-
+    
     private final ArrayList<Student> listOfStudent;
     private final Validation validation = new Validation();
     private final ReportController reportController = new ReportController();
-
+    
     public StudentConTroller() {
         this.listOfStudent = new ArrayList<>();
         Student student = new Student("He18", "duong", "fa", "Java");
@@ -26,13 +26,13 @@ public class StudentConTroller {
         listOfStudent.add(new Student("He18", "duong", "fa", ".Net"));
         listOfStudent.add(new Student("He18", "duong", "fa1", ".Net"));
         listOfStudent.add(new Student("He17", "chien", "fa1", ".Net"));
-
+        
     }
-
+    
     public StudentConTroller(ArrayList<Student> listOfStudent) {
         this.listOfStudent = listOfStudent;
     }
-
+    
     public ArrayList<Student> getListOfStudent() {
         return listOfStudent;
     }
@@ -51,10 +51,10 @@ public class StudentConTroller {
             String semester = validation.getString();
             String courseName = validation.validateCourseName();
             Student newStudent = new Student(id, studentName, semester, courseName);
-
+            
             this.listOfStudent.add(newStudent);
             countNumberOfStudentEnter++;
-
+            
             if (countNumberOfStudentEnter >= 1) {
                 if (!validation.validateConfirm()) {
                     return;
@@ -105,22 +105,22 @@ public class StudentConTroller {
             Collections.sort(listOfStudentFindByName, (Student student1, Student student2) -> {
                 return (int) (student1.getStudentName().compareTo(student2.getStudentName()));
             });
-
+            
             for (Student student : listOfStudentFindByName) {
                 System.out.format("%-20s | %-15s | %-15s\n", student.getStudentName(), student.getSemester(), student.getCourseName());
             }
-
+            
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
     }
-
+    
     public void printList() {
         for (Student student : listOfStudent) {
             System.out.println(student);
         }
     }
-
+    
     public ArrayList<Student> getListStudentById(String ID) {
         ArrayList<Student> res = new ArrayList<>();
         for (Student student : this.listOfStudent) {
@@ -130,7 +130,7 @@ public class StudentConTroller {
         }
         return res;
     }
-
+    
     private boolean checkCanUpdate(Student studentUpDate, int indexStudentUpdate) {
         for (int i = 0; i < listOfStudent.size(); i++) {
             Student studentCurrent = listOfStudent.get(i);
@@ -138,7 +138,7 @@ public class StudentConTroller {
                     = studentCurrent.getID().equalsIgnoreCase(studentUpDate.getID())
                     && studentCurrent.getCourseName().equalsIgnoreCase(studentUpDate.getCourseName())
                     && studentCurrent.getSemester().equalsIgnoreCase(studentUpDate.getSemester());
-
+            
             if (isSameIdAndCourseAndSameSesmeter) {
                 System.out.println(indexStudentUpdate + " " + i);
                 return (indexStudentUpdate == i);
@@ -146,7 +146,7 @@ public class StudentConTroller {
         }
         return true;
     }
-
+    
     public void updateStudent(Student studentWantToUpdate) {
         Student studentUpdateInListOfStudent = new Student();
         int index = -1;
@@ -163,14 +163,14 @@ public class StudentConTroller {
                 break;
             }
         }
-
+        
         System.out.println("Enter New Name : ");
         String newName = validation.validateStudentName();
         System.out.println("Enter new Semester: ");
         String newSemester = validation.getString();
         System.out.println("Enter course name:");
         String newCourse = validation.validateCourseName();
-
+        
         Student newInfo = new Student(studentUpdateInListOfStudent.getID(), newName, newSemester, newCourse);
         if (checkCanUpdate(newInfo, index)) {
             if (!newInfo.getStudentName().equalsIgnoreCase(studentWantToUpdate.getStudentName())) {
@@ -188,7 +188,7 @@ public class StudentConTroller {
             System.out.println("Can't update");
         }
     }
-
+    
     public void updateOrDelete() {
         System.out.println("enter Id: ");
         String idSearch = validation.getString();
@@ -197,18 +197,18 @@ public class StudentConTroller {
             System.out.println("List student don't have " + idSearch);
             return;
         }
-
+        
         for (int i = 0; i < listOfStudentFindById.size(); i++) {
             Student studentCurrent = listOfStudentFindById.get(i);
             System.out.format("%-15d%-20s%-15s%-15s%-15s\n", i + 1, studentCurrent.getID(),
                     studentCurrent.getStudentName(),
                     studentCurrent.getSemester(), studentCurrent.getCourseName());
         }
-
+        
         System.out.print("Enter your chose: ");
         int id = validation.getIntBetween(0, listOfStudentFindById.size());
         System.out.println("Do you want to update to delete: ");
-
+        
         Student StudentDeleleOrUpdate = listOfStudentFindById.get(id - 1);
         String inputConfirm = validation.getString();
         if (inputConfirm.equalsIgnoreCase("D")) {
@@ -216,9 +216,9 @@ public class StudentConTroller {
         } else {
             updateStudent(StudentDeleleOrUpdate);
         }
-
+        
     }
-
+    
     public void report() {
         if (listOfStudent.isEmpty()) {
             System.out.println("List of student is empty!");
@@ -230,17 +230,20 @@ public class StudentConTroller {
             int totalOfCourse = 0;
             String studentName = student.getStudentName();
             String course = student.getCourseName();
+            String studentId = student.getID();
             for (Student studentCountTotal : listOfStudent) {
-                boolean isEqualStudentNameAndCourse = studentName.equalsIgnoreCase(studentCountTotal.getStudentName())
+                boolean isEqualStudentNameAndCourse
+                        = studentId.equalsIgnoreCase(studentCountTotal.getID())
+                        && studentName.equalsIgnoreCase(studentCountTotal.getStudentName())
                         && course.equalsIgnoreCase(studentCountTotal.getCourseName());
                 if (isEqualStudentNameAndCourse) {
                     totalOfCourse++;
                 }
             }
-            reportController.addIfReportNotExitReport(studentName, course, totalOfCourse);
+            reportController.addIfReportNotExitReport(studentId, studentName, course, totalOfCourse);
         }
-
+        
         reportController.printReport();
     }
-
+    
 }
