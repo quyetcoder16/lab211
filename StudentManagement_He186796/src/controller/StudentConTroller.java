@@ -21,6 +21,12 @@ public class StudentConTroller {
 
     public StudentConTroller() {
         this.listOfStudent = new ArrayList<>();
+        Student student = new Student("He18", "duong", "fa", "Java");
+        listOfStudent.add(student);
+        listOfStudent.add(new Student("He18", "duong", "fa", ".Net"));
+        listOfStudent.add(new Student("He18", "duong", "fa1", ".Net"));
+        listOfStudent.add(new Student("He17", "chien", "fa1", ".Net"));
+
     }
 
     public StudentConTroller(ArrayList<Student> listOfStudent) {
@@ -37,9 +43,9 @@ public class StudentConTroller {
     public void addNewStudent() {
         int countNumberOfStudentEnter = 0;
         while (true) {
-            String id = validation.genarateId("SV", this.listOfStudent.size() + 1);
             System.out.println("===================");
-            System.out.println("Enter infomation of " + id);
+            System.out.print("enter Id: ");
+            String id = validation.getString();
             String studentName = validation.validateStudentName();
             System.out.print("Enter Semester:");
             String semester = validation.getString();
@@ -113,6 +119,104 @@ public class StudentConTroller {
         for (Student student : listOfStudent) {
             System.out.println(student);
         }
+    }
+
+    public ArrayList<Student> getListStudentById(String ID) {
+        ArrayList<Student> res = new ArrayList<>();
+        for (Student student : this.listOfStudent) {
+            if (student.getID().equalsIgnoreCase(ID)) {
+                res.add(student);
+            }
+        }
+        return res;
+    }
+
+    private boolean checkCanUpdate(Student studentUpDate, int indexStudentUpdate) {
+        for (int i = 0; i < listOfStudent.size(); i++) {
+            Student studentCurrent = listOfStudent.get(i);
+            boolean isSameIdAndCourseAndSameSesmeter
+                    = studentCurrent.getID().equalsIgnoreCase(studentUpDate.getID())
+                    && studentCurrent.getCourseName().equalsIgnoreCase(studentUpDate.getCourseName())
+                    && studentCurrent.getSemester().equalsIgnoreCase(studentUpDate.getSemester());
+
+            if (isSameIdAndCourseAndSameSesmeter) {
+                System.out.println(indexStudentUpdate + " " + i);
+                return (indexStudentUpdate == i);
+            }
+        }
+        return true;
+    }
+
+    public void updateStudent(Student studentWantToUpdate) {
+        Student studentUpdateInListOfStudent = new Student();
+        int index = -1;
+        for (int i = 0; i < listOfStudent.size(); i++) {
+            Student student = listOfStudent.get(i);
+            boolean isSameInfoStudent
+                    = student.getID().equalsIgnoreCase(studentWantToUpdate.getID())
+                    && student.getCourseName().equalsIgnoreCase(studentWantToUpdate.getCourseName())
+                    && student.getStudentName().equalsIgnoreCase(studentWantToUpdate.getStudentName())
+                    && student.getSemester().equalsIgnoreCase(studentWantToUpdate.getSemester());
+            if (isSameInfoStudent) {
+                studentUpdateInListOfStudent = student;
+                index = i;
+                break;
+            }
+        }
+
+        System.out.println("Enter New Name : ");
+        String newName = validation.validateStudentName();
+        System.out.println("Enter new Semester: ");
+        String newSemester = validation.getString();
+        System.out.println("Enter course name:");
+        String newCourse = validation.validateCourseName();
+
+        Student newInfo = new Student(studentUpdateInListOfStudent.getID(), newName, newSemester, newCourse);
+        if (checkCanUpdate(newInfo, index)) {
+            if (!newInfo.getStudentName().equalsIgnoreCase(studentWantToUpdate.getStudentName())) {
+                for (Student student : listOfStudent) {
+                    if (student.getID().equalsIgnoreCase(studentWantToUpdate.getID())) {
+                        student.setStudentName(newName);
+                    }
+                }
+            }
+            Student studentUpdateInLiStudent = listOfStudent.get(index);
+            studentUpdateInLiStudent.setStudentName(newName);
+            studentUpdateInLiStudent.setSemester(newSemester);
+            studentUpdateInLiStudent.setCourseName(newCourse);
+        } else {
+            System.out.println("Can't update");
+        }
+    }
+
+    public void updateOrDelete() {
+        System.out.println("enter Id: ");
+        String idSearch = validation.getString();
+        ArrayList<Student> listOfStudentFindById = this.getListStudentById(idSearch);
+        if (listOfStudentFindById.isEmpty()) {
+            System.out.println("List student don't have " + idSearch);
+            return;
+        }
+
+        for (int i = 0; i < listOfStudentFindById.size(); i++) {
+            Student studentCurrent = listOfStudentFindById.get(i);
+            System.out.format("%-15d%-20s%-15s%-15s%-15s\n", i + 1, studentCurrent.getID(),
+                    studentCurrent.getStudentName(),
+                    studentCurrent.getSemester(), studentCurrent.getCourseName());
+        }
+
+        System.out.print("Enter your chose: ");
+        int id = validation.getIntBetween(0, listOfStudentFindById.size());
+        System.out.println("Do you want to update to delete: ");
+
+        Student StudentDeleleOrUpdate = listOfStudentFindById.get(id - 1);
+        String inputConfirm = validation.getString();
+        if (inputConfirm.equalsIgnoreCase("D")) {
+            listOfStudent.remove(StudentDeleleOrUpdate);
+        } else {
+            updateStudent(StudentDeleleOrUpdate);
+        }
+
     }
 
     public void report() {
